@@ -6,7 +6,7 @@
 
 extern "C"
 {
-	__declspec(dllexport) Volume::f32 GetSystemVolume(Volume::Unit vUnit) {
+	__declspec(dllexport) Volume::f32 GetSystemVolume(Volume::Unit type) {
 		CoInitialize(NULL);
 
 		IMMDeviceEnumerator* deviceEnumerator = NULL;
@@ -24,11 +24,11 @@ extern "C"
 
 		Volume::f32 currentVolume = 0;
 
-		if (vUnit == Volume::Unit::Decibel) {
+		if (type == Volume::Unit::Decibel) {
 			hr = endpointVolume->GetMasterVolumeLevel(&currentVolume);
 		}
 
-		else if (vUnit == Volume::Unit::Scalar) {
+		else if (type == Volume::Unit::Scalar) {
 			hr = endpointVolume->GetMasterVolumeLevelScalar(&currentVolume);
 		}
 
@@ -64,7 +64,7 @@ extern "C"
 		CoUninitialize();
 	}
 
-	__declspec(dllexport) void SetSystemVolume(Volume::f32 value, Volume::Unit type) {
+	__declspec(dllexport) void SetSystemVolume(double value, Volume::Unit type) {
 		CoInitialize(NULL);
 
 		IMMDeviceEnumerator* deviceEnumerator = NULL;
@@ -81,10 +81,10 @@ extern "C"
 		defaultDevice = NULL;
 
 		if (type == Volume::Unit::Decibel) {
-			hr = endpointVolume->SetMasterVolumeLevel(value, NULL);
+			hr = endpointVolume->SetMasterVolumeLevel((Volume::f32)value, NULL);
 		}
 		else if (type == Volume::Unit::Scalar) {
-			hr = endpointVolume->SetMasterVolumeLevelScalar(value, NULL);
+			hr = endpointVolume->SetMasterVolumeLevelScalar((Volume::f32)value, NULL);
 		}
 
 		endpointVolume->Release();
